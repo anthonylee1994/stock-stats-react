@@ -1,1 +1,2 @@
-https://stock-stats-react.159.89.208.139.sslip.io/
+# basic stock stats system for test
+https://stocks-stats.ga/
