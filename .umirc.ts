@@ -15,4 +15,5 @@ export default defineConfig({
     title: false,
     antd: false,
   },
+  title: '鳩股分析',
 });

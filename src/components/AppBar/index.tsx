@@ -52,12 +52,13 @@ const AppBar = React.memo(() => {
       position="sticky"
       top={0}
       zIndex={1}
+      onBlur={() => setPopoverOpen(false)}
     >
       <Popover
         isOpen={isPopoverOpen}
         initialFocusRef={inputRef}
         onOpen={() => setPopoverOpen(true)}
-        onClose={() => setPopoverOpen(true)}
+        onClose={() => setPopoverOpen(false)}
       >
         <InputGroup maxWidth="md">
           <InputLeftElement width="4.5rem">
@@ -87,7 +88,12 @@ const AppBar = React.memo(() => {
             />
           </PopoverTrigger>
         </InputGroup>
-        <PopoverContent _focus={{}} width="md">
+        <PopoverContent
+          _focus={{}}
+          width="full"
+          minWidth={{ base: '100vw', md: 'md' }}
+          borderTopRadius="none"
+        >
           <PopoverBody p={0}>
             {searchedStocks.slice(0, 5).map((stock) => (
               <Flex
