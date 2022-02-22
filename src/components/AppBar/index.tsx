@@ -2,10 +2,13 @@ import React from 'react';
 import {
   Badge,
   Button,
+  CircularProgress,
+  CloseButton,
   Flex,
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -30,18 +33,27 @@ const AppBar = React.memo(() => {
   const searchedStocks = useStockStore((state) => state.searchedStocks);
   const isSearching = useStockStore((state) => state.searching);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const popupContentRef = React.useRef<HTMLElement>(null);
 
   const [isPopoverOpen, setPopoverOpen] = React.useState(false);
 
+  const search = React.useCallback(
+    (e?: any) => {
+      if (typeof e?.preventDefault === 'function') {
+        e.preventDefault();
+      }
+
+      searchStocks(
+        searchMode === 'symbol' ? appBarValue : undefined,
+        searchMode === 'name' ? appBarValue : undefined,
+      );
+    },
+    [searchMode, appBarValue, searchStocks],
+  );
+
   React.useEffect(
-    () =>
-      debounce(() => {
-        searchStocks(
-          searchMode === 'symbol' ? appBarValue : undefined,
-          searchMode === 'name' ? appBarValue : undefined,
-        );
-      }, 300),
-    [appBarValue, searchMode, searchStocks],
+    () => debounce(search, 100),
+    [appBarValue, search, searchMode, searchStocks],
   );
 
   return (
@@ -52,18 +64,11 @@ const AppBar = React.memo(() => {
       position="sticky"
       top={0}
       zIndex={1}
-      onBlur={() => setPopoverOpen(false)}
     >
-      <Popover
-        isOpen={isPopoverOpen}
-        initialFocusRef={inputRef}
-        onOpen={() => setPopoverOpen(true)}
-        onClose={() => setPopoverOpen(false)}
-      >
+      <Popover isOpen={isPopoverOpen} initialFocusRef={inputRef}>
         <InputGroup maxWidth="md">
-          <InputLeftElement width="4.5rem">
+          <InputLeftElement width="4.3rem">
             <Button
-              disabled={isSearching}
               colorScheme="gray"
               h="1.75rem"
               size="sm"
@@ -73,28 +78,52 @@ const AppBar = React.memo(() => {
             </Button>
           </InputLeftElement>
           <PopoverTrigger>
-            <Input
-              ref={inputRef}
-              pl="4.5rem"
-              variant="filled"
-              value={appBarValue}
-              placeholder={formatMessage({ id: 'search.placeholder' })}
-              onClick={() => setAppBarValue('')}
-              onChange={(e) => setAppBarValue(e.target.value)}
-              bg="white"
-              _focus={{ bg: 'white' }}
-              _hover={{ bg: 'white' }}
-              _before={{ bg: 'white' }}
-            />
+            <form
+              onFocus={() => setPopoverOpen(true)}
+              style={{ width: '100%' }}
+              onSubmit={search}
+            >
+              <Input
+                ref={inputRef}
+                pl="4.5rem"
+                pr="2.6rem"
+                variant="filled"
+                value={appBarValue}
+                placeholder={formatMessage({ id: 'search.placeholder' })}
+                onClick={() => setAppBarValue('')}
+                onChange={(e) => setAppBarValue(e.target.value)}
+                bg="white"
+                _focus={{ bg: 'white' }}
+                _hover={{ bg: 'white' }}
+                _before={{ bg: 'white' }}
+              />
+            </form>
           </PopoverTrigger>
+          {isPopoverOpen && (
+            <InputRightElement>
+              {isSearching ? (
+                <CircularProgress size={5} isIndeterminate />
+              ) : (
+                <CloseButton
+                  _focus={{}}
+                  onClick={() => {
+                    setAppBarValue('');
+                    setPopoverOpen(false);
+                    search();
+                  }}
+                />
+              )}
+            </InputRightElement>
+          )}
         </InputGroup>
         <PopoverContent
           _focus={{}}
           width="full"
           minWidth={{ base: '100vw', md: 'md' }}
           borderTopRadius="none"
+          ref={popupContentRef}
         >
-          <PopoverBody p={0}>
+          <PopoverBody zIndex={2} p={0}>
             {searchedStocks.slice(0, 5).map((stock) => (
               <Flex
                 cursor="pointer"
@@ -103,8 +132,9 @@ const AppBar = React.memo(() => {
                 alignItems="center"
                 key={stock.id}
                 onClick={() => {
-                  setPopoverOpen(false);
                   setAppBarValue('');
+                  setPopoverOpen(false);
+                  search();
                   history.push(`/${stock.symbol}`);
                 }}
               >
