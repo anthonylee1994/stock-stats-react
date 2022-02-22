@@ -1,0 +1,17 @@
+export default {
+  'search.placeholder': '搜尋證券',
+  'search.symbol.toggle': '編號',
+  'search.name.toggle': '名稱',
+  'chart.price.diff.title': '價差圖',
+  'chart.price.diff.stat.title': '價差統計',
+  'chart.price.diff.histogram.title': '價差直方圖',
+  'stock.price.diff.label': '價差',
+  'chart.price.diff.histogram.occurrence.count': '發生數量',
+  'stock.diff.part.period.daily': '日',
+  'stock.diff.part.period.weekly': '週',
+  'stock.diff.part.period.monthly': '月',
+  'stock.diff.part.period.daily.full': '每日',
+  'stock.diff.part.period.weekly.full': '每週',
+  'stock.diff.part.period.monthly.full': '每月',
+  'common.all': '全部',
+};
