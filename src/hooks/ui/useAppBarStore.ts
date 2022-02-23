@@ -15,6 +15,7 @@ export const useAppBarStore = create<AppBarStore>((set) => ({
   },
   toggleSearchMode() {
     set((state) => ({
+      value: '',
       searchMode: state.searchMode === 'symbol' ? 'name' : 'symbol',
     }));
   },

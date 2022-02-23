@@ -18,7 +18,6 @@ import {
 import { FormattedMessage, useIntl } from 'umi';
 import { useStockStore } from '@/hooks/useStockStore';
 import { useAppBarStore } from '@/hooks/ui/useAppBarStore';
-import { debounce } from 'lodash';
 import { useHistory } from 'umi';
 
 const AppBar = React.memo(() => {
@@ -51,10 +50,11 @@ const AppBar = React.memo(() => {
     [searchMode, appBarValue, searchStocks],
   );
 
-  React.useEffect(
-    () => debounce(search, 100),
-    [appBarValue, search, searchMode, searchStocks],
-  );
+  React.useEffect(() => {
+    setPopoverOpen(false);
+  }, [searchMode]);
+
+  React.useEffect(search, [appBarValue, search, searchMode, searchStocks]);
 
   return (
     <Flex
